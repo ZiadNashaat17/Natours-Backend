@@ -11,12 +11,7 @@ const signToken = id => {
 };
 
 export const signUp = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  });
+  const newUser = await User.create(req.body);
 
   const token = signToken(newUser._id);
 
@@ -68,6 +63,6 @@ export const protect = catchAsync(async (req, res, next) => {
   if (!freshUser) return next(new AppError('User no longer exists!!', 401));
 
   // Check if user changed password after the token was issued
-
+  freshUser.passwordChangedAfter(decoded.iat);
   next();
 });
