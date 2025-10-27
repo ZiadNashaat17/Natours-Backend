@@ -16,6 +16,11 @@ const userSchema = new Schema({
     validate: [validator.isEmail, 'Please provide a valid email.'],
   },
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -35,7 +40,10 @@ const userSchema = new Schema({
       message: 'Passwords are not the same!',
     },
   },
-  passwordChangedAt: Date,
+  passwordChangedAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -47,6 +55,9 @@ userSchema.pre('save', async function (next) {
 
   //   Delete passwordConfirm field
   this.passwordConfirm = undefined;
+
+  // Update the passwordChangedAt
+  this.passwordChangedAt = Date.now();
 });
 
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
