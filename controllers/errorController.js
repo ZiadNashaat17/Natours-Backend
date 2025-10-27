@@ -58,14 +58,14 @@ export default (err, req, res, next) => {
   err.status = err.status || 'error';
 
   const env = process.env.NODE_ENV.trim();
+
   if (env === 'development') {
     // console.log('entered development handler');
-
     sendErrorDev(err, res);
   } else if (env === 'production') {
     // console.log('entered production handler');
-
     let error = err;
+
     // console.log(err.code);
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
