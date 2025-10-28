@@ -41,10 +41,7 @@ const userSchema = new Schema({
       message: 'Passwords are not the same!',
     },
   },
-  passwordChangedAt: {
-    type: Date,
-    default: Date.now(),
-  },
+  passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
 });
@@ -61,6 +58,13 @@ userSchema.pre('save', async function (next) {
 
   // Update the passwordChangedAt
   this.passwordChangedAt = Date.now();
+});
+
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
 });
 
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
