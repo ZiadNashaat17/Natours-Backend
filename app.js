@@ -1,5 +1,7 @@
 import express, { json } from 'express';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
@@ -8,15 +10,28 @@ import userRouter from './routes/userRouter.js';
 
 const app = express();
 
-// 1. Middlewares
-// console.log(process.env.NODE_ENV);
+// 1. Global Middlewares
+// Set security HTTP headers
+app.use(helmet());
+
+// Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(json());
+// Limit requests from same API
+const limiter = rateLimit({
+  limit: 100,
+  windowMs: 15 * 60 * 1000,
+  message: 'Too many requests!! Try again after 15 minutes.',
+});
+app.use('/api', limiter);
+
+// Body parser, reading data from body into req.body
+app.use(json({ limit: '10kb' }));
 // app.use(static(`${__dirname}/public`));
 
+// Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
