@@ -8,7 +8,14 @@ import {
   updateUser,
   deleteUser,
 } from './../controllers/userController.js';
-import { signUp, login, forgotPassword, resetPassword } from './../controllers/authController.js';
+import {
+  signUp,
+  login,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+  protect,
+} from './../controllers/authController.js';
 
 const router = Router();
 
@@ -17,6 +24,8 @@ router.post('/login', login);
 
 router.post(`/${slugify('Forgot Password', { lower: true })}`, forgotPassword);
 router.patch(`/${slugify('Reset Password', { lower: true })}/:token`, resetPassword);
+
+router.patch(`/${slugify('Update Password', { lower: true })}`, protect, updatePassword);
 
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
