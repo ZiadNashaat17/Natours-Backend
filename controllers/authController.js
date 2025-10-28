@@ -61,7 +61,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3. Check if user still exists
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id); //_id
 
   if (!currentUser) return next(new AppError('User no longer exists!!', 401));
 
@@ -153,6 +153,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError('No user found! Please Try Again!!', 400));
   }
+  console.log(user._id);
 
   // 2. Check if POSTed current password is correct
   if (!user.correctPassword(req.body.passwordCurrent, user.password)) {
