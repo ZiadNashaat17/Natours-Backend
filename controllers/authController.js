@@ -12,16 +12,22 @@ const signToken = id => {
   });
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 export const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: { user: newUser },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 export const login = catchAsync(async (req, res, next) => {
@@ -39,12 +45,7 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid email or password!', 401));
   }
   // 3) if everything ok, send token to client
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 export const protect = catchAsync(async (req, res, next) => {
@@ -143,10 +144,26 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   // 3. Update changedPasswordAt property for the user
 
   // 4. Log the user in, send JWT
-  const token = signToken(user._id);
+  createSendToken(user, 200, res);
+});
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+export const updatePassword = catchAsync(async (req, res, next) => {
+  // 1. Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+  if (!user) {
+    return next(new AppError('No user found! Please Try Again!!', 400));
+  }
+
+  // 2. Check if POSTed current password is correct
+  if (!user.correctPassword(req.body.passwordCurrent, user.password)) {
+    return next(new AppError('The current password is incorrect!! Please try again.', 401));
+  }
+
+  // 3. If so, update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // 4. Log user in, send JWT
+  createSendToken(user, 200, res);
 });
