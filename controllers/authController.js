@@ -14,6 +14,19 @@ const signToken = id => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+  const cookieOptions = {
+    expiresIn: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN),
+    httpOnly: true,
+  };
+  const env = process.env.NODE_ENV.trim();
+
+  if (env === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  // hide password and passwordChangedAt from output
+  user.password = undefined;
+  user.passwordChangedAt = undefined;
 
   res.status(statusCode).json({
     status: 'success',
