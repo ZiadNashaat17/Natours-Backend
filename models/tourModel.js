@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import slugify from 'slugify';
+import User from './userModel.js';
 // import validator from 'validator';
 
 const tourSchema = new Schema(
@@ -102,6 +103,7 @@ const tourSchema = new Schema(
         day: Number,
       },
     ],
+    guides: Array,
   },
   {
     toJSON: { virtuals: true },
@@ -116,6 +118,13 @@ tourSchema.virtual('durationWeeks').get(function () {
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+tourSchema.pre('save', async function (next) {
+  const guidesPromises = this.guides.map(async id => await User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
+
   next();
 });
 
