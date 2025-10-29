@@ -2,6 +2,9 @@ import express, { json } from 'express';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
+import xss from 'xss-clean';
 
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
@@ -29,6 +32,27 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(json({ limit: '10kb' }));
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+
+// Prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsAverage',
+      'ratingsQuantity',
+      'price',
+      'maxGroupSize',
+      'difficulty',
+    ],
+  })
+);
+
 // app.use(static(`${__dirname}/public`));
 
 // Test Middleware
