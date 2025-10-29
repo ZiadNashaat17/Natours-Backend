@@ -19,6 +19,8 @@ const handleValidationError = err => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = () => new AppError('Invalid token. Please try logging in again!!', 401);
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -27,6 +29,9 @@ const sendErrorDev = (err, res) => {
     stack: err.stack,
   });
 };
+
+const handleJWTExpiredError = () =>
+  new AppError('Your token has expired. Please try logging in again!!', 401);
 
 const sendErrorProd = (err, res) => {
   // console.log(err.message);
@@ -37,7 +42,7 @@ const sendErrorProd = (err, res) => {
       message: err.message,
     });
   } else {
-    // console.error('Error!!!!!!', err);
+    console.error('Error!!!!!!', err);
 
     res.status(500).json({
       status: 'error',
@@ -47,26 +52,27 @@ const sendErrorProd = (err, res) => {
 };
 
 export default (err, req, res, next) => {
-  console.log('entered global handler');
+  // console.log('entered global handler');
 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  // eslint-disable-next-line no-undef
   const env = process.env.NODE_ENV.trim();
-  if (env === 'development') {
-    console.log('entered development handler');
 
+  if (env === 'development') {
+    // console.log('entered development handler');
     sendErrorDev(err, res);
   } else if (env === 'production') {
-    console.log('entered production handler');
-
+    // console.log('entered production handler');
     let error = err;
+
     // console.log(err.code);
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError') error = handleValidationError(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
     sendErrorProd(error, res);
   }
