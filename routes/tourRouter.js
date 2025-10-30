@@ -10,12 +10,15 @@ import {
   deleteTour,
 } from '../controllers/tourController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
-import { createReview } from '../controllers/reviewController.js';
+import reviewRouter from './reviewRouter.js';
 // import app from './../app';
 
 const router = Router();
 
 // router.param('id', tourController.checkID);
+
+// router.route('/:tourId/reviews').post(protect, restrictTo('user'), createReview);
+router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
@@ -30,7 +33,5 @@ router
   .get(getTour)
   .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
-
-router.route('/:tourId/reviews').post(protect, restrictTo('user'), createReview);
 
 export default router;
