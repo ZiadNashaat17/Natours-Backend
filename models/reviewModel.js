@@ -34,13 +34,6 @@ const reviewSchema = new Schema(
   }
 );
 
-reviewSchema.pre(/^find/, function (next) {
-  this.populate('Tour');
-  this.populate('User');
-
-  next();
-});
-
 const Review = model('Review', reviewSchema);
 
 export default Review;
