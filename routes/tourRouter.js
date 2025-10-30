@@ -10,6 +10,7 @@ import {
   deleteTour,
 } from '../controllers/tourController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
+import { createReview } from '../controllers/reviewController.js';
 // import app from './../app';
 
 const router = Router();
@@ -29,5 +30,7 @@ router
   .get(getTour)
   .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
+
+router.route('/:tourId/reviews').post(protect, restrictTo('user'), createReview);
 
 export default router;
