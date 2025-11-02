@@ -2,6 +2,7 @@ import AppError from '../utils/appError.js';
 import Tour from './../models/tourModel.js';
 import APIFeatures from './../utils/apiFeatures.js';
 import catchAsync from './../utils/catchAsync.js';
+import { deleteOne } from './factoryHandler.js';
 
 export const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -86,19 +87,20 @@ export const updateTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
+export const deleteTour = deleteOne(Tour);
+// export const deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
 
-  if (!tour) {
-    return next(new AppError('Cannot find tour with this ID', 404));
-  }
+//   if (!tour) {
+//     return next(new AppError('Cannot find tour with this ID', 404));
+//   }
 
-  res.status(204).json({
-    // 204 means no content
-    status: 'success',
-    data: null, // we send null to show that the resource that we deleted no longer exists.
-  });
-});
+//   res.status(204).json({
+//     // 204 means no content
+//     status: 'success',
+//     data: null, // we send null to show that the resource that we deleted no longer exists.
+//   });
+// });
 
 export const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
