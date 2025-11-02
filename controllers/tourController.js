@@ -2,7 +2,7 @@ import AppError from '../utils/appError.js';
 import Tour from './../models/tourModel.js';
 import APIFeatures from './../utils/apiFeatures.js';
 import catchAsync from './../utils/catchAsync.js';
-import { deleteOne } from './factoryHandler.js';
+import { createOne, deleteOne, updateOne } from './factoryHandler.js';
 
 export const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -40,54 +40,57 @@ export const getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).send({
-    // status code 201: Success and a resource created
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-  // try {
-  //   // const newTour = new Tour({});
-  //   // newTour.save()
-
-  //   const newTour = await Tour.create(req.body);
-  //   res.status(201).send({
-  //     // status code 201: Success and a resource created
-  //     status: 'success',
-  //     data: {
-  //       tour: newTour,
-  //     },
-  //   });
-  // } catch (err) {
-  //   res.status(400).json({
-  //     status: 'fail',
-  //     message: err,
-  //   });
-  // }
-});
-
-export const updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, // return the updated doc rather than the original
-    runValidators: true,
-  });
-
-  if (!tour) {
-    return next(new AppError('Can not find tour with this ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
+export const createTour = createOne(Tour);
+export const updateTour = updateOne(Tour);
 export const deleteTour = deleteOne(Tour);
+
+// export const createTour = catchAsync(async (req, res, next) => {
+//   const newTour = await Tour.create(req.body);
+//   res.status(201).send({
+//     // status code 201: Success and a resource created
+//     status: 'success',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+//   // try {
+//   //   // const newTour = new Tour({});
+//   //   // newTour.save()
+
+//   //   const newTour = await Tour.create(req.body);
+//   //   res.status(201).send({
+//   //     // status code 201: Success and a resource created
+//   //     status: 'success',
+//   //     data: {
+//   //       tour: newTour,
+//   //     },
+//   //   });
+//   // } catch (err) {
+//   //   res.status(400).json({
+//   //     status: 'fail',
+//   //     message: err,
+//   //   });
+//   // }
+// });
+
+// export const updateTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true, // return the updated doc rather than the original
+//     runValidators: true,
+//   });
+
+//   if (!tour) {
+//     return next(new AppError('Can not find tour with this ID', 404));
+//   }
+
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour,
+//     },
+//   });
+// });
+
 // export const deleteTour = catchAsync(async (req, res, next) => {
 //   const tour = await Tour.findByIdAndDelete(req.params.id);
 
