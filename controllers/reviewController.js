@@ -1,22 +1,5 @@
 import Review from '../models/reviewModel.js';
-// import AppError from '../utils/appError.js';
-import catchAsync from '../utils/catchAsync.js';
-import { createOne, deleteOne, updateOne } from './factoryHandler.js';
-
-export const getAllReviews = catchAsync(async (req, res, next) => {
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-
-  const reviews = await Review.find(filter);
-
-  res.status(200).json({
-    status: 'success',
-    result: reviews.length,
-    data: {
-      reviews,
-    },
-  });
-});
+import { createOne, deleteOne, getAll, getOne, updateOne } from './factoryHandler.js';
 
 export const setTourUserId = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
@@ -25,6 +8,8 @@ export const setTourUserId = (req, res, next) => {
   next();
 };
 
+export const getAllReviews = getAll(Review);
+export const getReview = getOne(Review);
 export const createReview = createOne(Review);
 export const updateReview = updateOne(Review);
 export const deleteReview = deleteOne(Review);

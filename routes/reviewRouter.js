@@ -4,6 +4,7 @@ import {
   createReview,
   deleteReview,
   getAllReviews,
+  getReview,
   setTourUserId,
   updateReview,
 } from '../controllers/reviewController.js';
@@ -11,6 +12,6 @@ import {
 const router = Router({ mergeParams: true });
 
 router.route('/').get(getAllReviews).post(protect, restrictTo('user'), setTourUserId, createReview);
-router.route('/:id').patch(updateReview).delete(deleteReview);
+router.route('/:id').get(getReview).patch(updateReview).delete(deleteReview);
 
 export default router;
