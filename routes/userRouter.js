@@ -8,6 +8,7 @@ import {
   deleteUser,
   updateMe,
   deleteMe,
+  getMe,
 } from './../controllers/userController.js';
 import {
   signUp,
@@ -23,11 +24,12 @@ const router = Router();
 router.post('/signup', signUp);
 router.post('/login', login);
 
-router.post(`/${slugify('Forgot Password', { lower: true })}`, forgotPassword);
-router.patch(`/${slugify('Reset Password', { lower: true })}/:token`, resetPassword);
-router.patch(`/${slugify('Update Password', { lower: true })}`, protect, updatePassword);
-router.patch(`/${slugify('Update Me', { lower: true })}`, protect, updateMe);
-router.patch(`/${slugify('Delete Me', { lower: true })}`, protect, deleteMe);
+router.get('/me', protect, getMe, getUser);
+router.post('forgot-password', forgotPassword);
+router.patch('/reset-password/:token', resetPassword);
+router.patch('update-password', protect, updatePassword);
+router.patch('update-me', protect, updateMe);
+router.patch('delete-me', protect, deleteMe);
 
 router.route('/').get(getAllUsers);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
