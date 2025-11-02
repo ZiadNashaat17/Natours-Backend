@@ -11,7 +11,13 @@ import {
 
 const router = Router({ mergeParams: true });
 
-router.route('/').get(getAllReviews).post(protect, restrictTo('user'), setTourUserId, createReview);
-router.route('/:id').get(getReview).patch(updateReview).delete(deleteReview);
+router.use(protect);
+
+router.route('/').get(getAllReviews).post(restrictTo('user'), setTourUserId, createReview);
+router
+  .route('/:id')
+  .get(getReview)
+  .patch(restrictTo('user', 'admin'), updateReview)
+  .delete(restrictTo('user', 'admin'), deleteReview);
 
 export default router;

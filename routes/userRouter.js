@@ -17,19 +17,23 @@ import {
   resetPassword,
   updatePassword,
   protect,
+  restrictTo,
 } from './../controllers/authController.js';
 
 const router = Router();
 
 router.post('/signup', signUp);
 router.post('/login', login);
-
-router.get('/me', protect, getMe, getUser);
 router.post('forgot-password', forgotPassword);
 router.patch('/reset-password/:token', resetPassword);
-router.patch('update-password', protect, updatePassword);
-router.patch('update-me', protect, updateMe);
-router.patch('delete-me', protect, deleteMe);
+
+router.use(protect);
+router.get('/me', getMe, getUser);
+router.patch('update-password', updatePassword);
+router.patch('update-me', updateMe);
+router.patch('delete-me', deleteMe);
+
+router.use(restrictTo('admin'));
 
 router.route('/').get(getAllUsers);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
