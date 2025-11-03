@@ -1,6 +1,4 @@
 import { Router } from 'express';
-import slugify from 'slugify';
-
 import {
   getAllUsers,
   getUser,
@@ -9,6 +7,8 @@ import {
   updateMe,
   deleteMe,
   getMe,
+  uploadUserPhoto,
+  resizeUserPhoto,
 } from './../controllers/userController.js';
 import {
   signUp,
@@ -29,9 +29,9 @@ router.patch('/reset-password/:token', resetPassword);
 
 router.use(protect);
 router.get('/me', getMe, getUser);
-router.patch('update-password', updatePassword);
-router.patch('update-me', updateMe);
-router.patch('delete-me', deleteMe);
+router.patch('/update-password', updatePassword);
+router.patch('/update-me', uploadUserPhoto, resizeUserPhoto, updateMe);
+router.patch('/delete-me', deleteMe);
 
 router.use(restrictTo('admin'));
 
