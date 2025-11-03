@@ -9,6 +9,7 @@ import {
   updateTour,
   deleteTour,
   getToursWithin,
+  getDistances,
 } from '../controllers/tourController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
 import reviewRouter from './reviewRouter.js';
@@ -30,6 +31,7 @@ router
 
 router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(getToursWithin);
 // /tours-within/233/center/30.044273,31.217959/unit/mi
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 router.route('/').get(getAllTours).post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
