@@ -8,6 +8,7 @@ import {
   getTour,
   updateTour,
   deleteTour,
+  getToursWithin,
 } from '../controllers/tourController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
 import reviewRouter from './reviewRouter.js';
@@ -26,6 +27,9 @@ router.route('/tour-stats').get(getTourStats);
 router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
+
+router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(getToursWithin);
+// /tours-within/233/center/30.044273,31.217959/unit/mi
 
 router.route('/').get(getAllTours).post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
