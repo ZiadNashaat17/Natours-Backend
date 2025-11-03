@@ -83,8 +83,9 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 };
 
 userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
-  const changedAtTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+  // Check if passwordChangedAt exists BEFORE calling getTime() to avoid TypeError
   if (this.passwordChangedAt) {
+    const changedAtTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
     return JWTTimestamp < changedAtTimestamp; // 100 < 200 : true  -> password changed (password changed first then the token was issued)
     // 300 < 200 : false -> password didn't change (token issued then password changed after that)
   }

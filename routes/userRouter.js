@@ -3,12 +3,12 @@ import slugify from 'slugify';
 
 import {
   getAllUsers,
-  createUser,
   getUser,
   updateUser,
   deleteUser,
   updateMe,
   deleteMe,
+  getMe,
 } from './../controllers/userController.js';
 import {
   signUp,
@@ -17,20 +17,25 @@ import {
   resetPassword,
   updatePassword,
   protect,
+  restrictTo,
 } from './../controllers/authController.js';
 
 const router = Router();
 
 router.post('/signup', signUp);
 router.post('/login', login);
+router.post('forgot-password', forgotPassword);
+router.patch('/reset-password/:token', resetPassword);
 
-router.post(`/${slugify('Forgot Password', { lower: true })}`, forgotPassword);
-router.patch(`/${slugify('Reset Password', { lower: true })}/:token`, resetPassword);
-router.patch(`/${slugify('Update Password', { lower: true })}`, protect, updatePassword);
-router.patch(`/${slugify('Update Me', { lower: true })}`, protect, updateMe);
-router.patch(`/${slugify('Delete Me', { lower: true })}`, protect, deleteMe);
+router.use(protect);
+router.get('/me', getMe, getUser);
+router.patch('update-password', updatePassword);
+router.patch('update-me', updateMe);
+router.patch('delete-me', deleteMe);
 
-router.route('/').get(getAllUsers).post(createUser);
+router.use(restrictTo('admin'));
+
+router.route('/').get(getAllUsers);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 export default router;

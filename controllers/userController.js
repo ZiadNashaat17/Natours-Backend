@@ -1,7 +1,7 @@
-// import AppError from '../utils/appError.js';
 import AppError from '../utils/appError.js';
 import User from './../models/userModel.js';
 import catchAsync from './../utils/catchAsync.js';
+import { deleteOne, getAll, getOne, updateOne } from './factoryHandler.js';
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -12,16 +12,11 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find({}, { password: 0 });
+export const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
 
-  // SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: users.length, // we send results cause we sent multiple tours not just one.
-    data: { users },
-  });
-});
+  next();
+};
 
 export const updateMe = catchAsync(async (req, res, next) => {
   // 1. Create error if user POSTs password data
@@ -57,30 +52,15 @@ export const deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-export function getUser(req, res) {
+export const createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'this rout is not defined yet.',
+    message: 'This route is not defined! Please use /signup instead',
   });
-}
+};
 
-export function createUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'this rout is not defined yet.',
-  });
-}
-
-export function updateUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'this rout is not defined yet.',
-  });
-}
-
-export function deleteUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'this rout is not defined yet.',
-  });
-}
+export const getAllUsers = getAll(User);
+export const getUser = getOne(User);
+// Do Not updated Password with this
+export const updateUser = updateOne(User);
+export const deleteUser = deleteOne(User);
