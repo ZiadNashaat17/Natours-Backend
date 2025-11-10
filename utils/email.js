@@ -1,27 +1,35 @@
-import { createTransport } from 'nodemailer';
+import sgMail from '@sendgrid/mail';
+import { config } from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from project root config.env
+config({ path: path.join(__dirname, '..', 'config.env') });
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendEmail = async options => {
   // 1. Create a transporter
-  const transporter = createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
-  // 2. Define the email options
-  const mailOptions = {
-    from: 'Ziad Nashaat <user@gmail.com>',
+  const msg = {
     to: options.email,
+    from: process.env.EMAIL_FROM,
     subject: options.subject,
     text: options.message,
-    //   html:
   };
 
-  // 3. Actually send the email
-  await transporter.sendMail(mailOptions);
+  try {
+    await sgMail.send(msg);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error);
+    if (error.response) {
+      console.error(error.response.body);
+    }
+    throw error;
+  }
 };
 
 export default sendEmail;
