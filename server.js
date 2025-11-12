@@ -8,11 +8,10 @@ process.on('uncaughtException', err => {
   process.exit(1);
 });
 
-config({ path: './config.env' });
+config({ path: './.docker.env' });
 import app from './app.js';
-import slugify from 'slugify';
 
-const DB = process.env.DATABASE.replace('<db_password>', process.env.DB_PASSWORD);
+const DB = process.env.DATABASE;
 
 connect(DB).then(con => {
   // console.log(con.connection);
